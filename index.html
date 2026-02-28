@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACE Exam Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Google ACE – Exam Simulator</h1>
+
+      <!-- Question Generation Panel -->
+      <div id="generation-panel" class="generation-panel">
+        <h3>🤖 Generar Examen con IA</h3>
+        <p class="generation-description">
+          Genera un examen personalizado con preguntas aleatorias sobre
+          cualquier tema del examen Associate Cloud Engineer
+        </p>
+        <div class="generation-controls">
+          <label for="exam-size" class="exam-size-label">
+            ¿Cuántas preguntas deseas?
+          </label>
+          <div class="exam-size-input-group">
+            <input
+              type="number"
+              id="exam-size"
+              min="1"
+              max="80"
+              value="10"
+              class="question-count-input"
+            />
+            <button id="generate-exam" class="btn-generate-exam">
+              🎯 Generar Examen
+            </button>
+          </div>
+        </div>
+        <div id="generation-status" class="generation-status hidden"></div>
+      </div>
+
+      <div id="quiz-box">
+        <p id="question-counter"></p>
+        <h2 id="question"></h2>
+
+        <form id="options"></form>
+
+        <div class="buttons">
+          <button id="prev">Anterior</button>
+          <button id="next">Siguiente</button>
+        </div>
+      </div>
+
+      <div id="result-box" class="hidden">
+        <h2>Resultado</h2>
+        <p id="score"></p>
+        <button onclick="location.reload()">Reintentar</button>
+
+        <!-- Incorrect Questions Review Section -->
+        <div
+          id="incorrect-questions-container"
+          class="incorrect-questions-container"
+        ></div>
+      </div>
+    </div>
+
+    <script src="env.js"></script>
+    <script src="config.js"></script>
+    <script src="questionGenerator.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

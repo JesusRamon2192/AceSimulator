@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  simulador-ace:
+    build: .
+    container_name: simulador-ace
+    ports:
+      - "8080:80"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    restart: unless-stopped
