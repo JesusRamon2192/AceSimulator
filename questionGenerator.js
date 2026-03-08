@@ -4,9 +4,12 @@
 
 class QuestionGenerator {
   constructor() {
-    this.apiKey = CONFIG.OPENAI_API_KEY;
+    this.providers = CONFIG.PROVIDERS || ['OPENAI'];
+    this.currentApiIndex = parseInt(localStorage.getItem('ace-current-api-index')) || 0;
+    if (this.currentApiIndex >= this.providers.length) {
+      this.currentApiIndex = 0;
+    }
     this.apiUrl = CONFIG.OPENAI_API_URL;
-    this.model = CONFIG.MODEL;
     this.topics = [];
     this.BATCH_SIZE = 5;
   }
@@ -68,16 +71,79 @@ class QuestionGenerator {
       allQuestions.push(...unique);
     }
 
+    // Identificamos las preguntas agregando qué API se utilizó para esta corrida de batch
+    allQuestions.forEach(q => {
+      if(!q.apiUsed) {
+        q.apiUsed = this.providers[this.currentApiIndex];
+      }
+    });
+
+    // Moverse al siguiente índice API (Round Robin)
+    this.currentApiIndex = (this.currentApiIndex + 1) % this.providers.length;
+    localStorage.setItem('ace-current-api-index', this.currentApiIndex);
+
     return allQuestions.slice(0, total);
   }
 
-  /* ===============================
-   * GENERACIÓN DE LOTE
-   * =============================== */
   async generateBatch(count, topics) {
     const prompt = this.buildPrompt(count, topics);
-    const raw = await this.callOpenAI(prompt);
-    return this.parseResponse(raw);
+
+    let attempts = 0;
+    const maxAttempts = this.providers.length;
+
+    while (attempts < maxAttempts) {
+      try {
+        const currentApi = this.providers[this.currentApiIndex];
+        const raw = await this.callAI(prompt);
+        const parsed = this.parseResponse(raw);
+        
+        // Log the successful usage
+        this.logUsage(currentApi);
+        return parsed;
+      } catch (err) {
+        const failedApi = this.providers[this.currentApiIndex] || `API #${this.currentApiIndex}`;
+        console.warn(`⚠️ Intento fallido con ${failedApi}: ${err.message}`);
+        
+        // Registrar la falla en el log del servidor
+        this.logUsage(failedApi, "error", err.message);
+
+        // Cambiar a la siguiente API en el frontend
+        this.currentApiIndex = (this.currentApiIndex + 1) % this.providers.length;
+        localStorage.setItem('ace-current-api-index', this.currentApiIndex);
+        
+        attempts++;
+        if (attempts < maxAttempts) {
+          const nextApi = this.providers[this.currentApiIndex];
+          console.log(`🔄 Reintentando con siguiente API: ${nextApi}...`);
+          
+          if (typeof showStatus === 'function') {
+            showStatus(`⚠️ ${failedApi} falló. Reintentando con ${nextApi}...`, 'warning');
+          }
+        }
+      }
+    }
+
+    if (typeof showStatus === 'function') {
+      showStatus("❌ Todas las APIs fallaron. Verifica tus tokens (.env).", 'error');
+    }
+    throw new Error("Todas las APIs fallaron. Verifica que tengas llaves configuradas.");
+  }
+
+  /* ===============================
+   * REGISTRO DE USO
+   * =============================== */
+  async logUsage(apiName, status = "success", errorMsg = "") {
+    try {
+      await fetch('/api/log', {
+        method: 'POST',
+        headers: {
+           'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ apiName, status, errorMsg })
+      });
+    } catch (err) {
+      console.error('Error enviando log al servidor:', err);
+    }
   }
 
   /* ===============================
@@ -119,11 +185,13 @@ FORMATO EXACTO:
   }
 
   /* ===============================
-   * OPENAI
+   * API LOCAL (Proxy a PROVEEDORES IA)
    * =============================== */
-  async callOpenAI(prompt) {
+  async callAI(prompt) {
+    const currentProvider = this.providers[this.currentApiIndex];
+
     const body = {
-      model: this.model,
+      provider: currentProvider,
       messages: [
         { role: "system", content: "Responde únicamente con JSON válido." },
         { role: "user", content: prompt }
@@ -132,19 +200,18 @@ FORMATO EXACTO:
       max_tokens: CONFIG.MAX_TOKENS
     };
 
-    const res = await fetch(this.apiUrl, {
+    const res = await fetch(CONFIG.OPENAI_API_URL, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey}`
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(body)
     });
 
     if (!res.ok) {
       const err = await res.text();
-      console.error("❌ Error OpenAI:", err);
-      throw new Error("Error al generar preguntas");
+      console.error(`❌ Error Proxy API (${currentProvider}):`, err);
+      throw new Error(`Error al consultar el proxy con ${currentProvider}`);
     }
 
     const data = await res.json();

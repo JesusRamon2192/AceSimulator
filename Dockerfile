@@ -1,13 +1,15 @@
-FROM nginx:alpine
+FROM node:20-alpine
 
-# Copy static files to nginx html directory
-COPY . /usr/share/nginx/html/
+WORKDIR /app
 
-# Make entrypoint script executable
-RUN chmod +x /usr/share/nginx/html/entrypoint.sh
+# Copy package files and install dependencies
+COPY package*.json ./
+RUN npm install --production
 
-# Expose port 80
+# Copy application files
+COPY . .
+
+# Expose port (80 can be used if requested, default to let's say 80 for proxy config)
 EXPOSE 80
 
-# Use our custom entrypoint script
-ENTRYPOINT ["/usr/share/nginx/html/entrypoint.sh", "nginx", "-g", "daemon off;"]
+CMD ["node", "server.js"]
