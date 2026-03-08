@@ -721,46 +721,64 @@ button:hover::before {
   }
   
   .container {
-    margin: 20px auto;
+    margin: 10px auto;
+    width: 100%;
   }
   
   h1 {
-    font-size: 2rem;
-    margin-bottom: 30px;
+    font-size: 1.8rem;
+    margin-bottom: 25px;
   }
   
   #quiz-box {
-    padding: 24px;
+    padding: 20px;
   }
   
   #question {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
   }
   
   label {
-    padding: 14px 16px;
+    padding: 12px 16px;
     font-size: 0.95rem;
   }
   
   .buttons {
     flex-direction: column;
+    gap: 12px;
   }
   
   button {
     width: 100%;
+    box-sizing: border-box;
   }
   
   #result-box {
-    padding: 40px 24px;
+    padding: 30px 20px;
+  }
+
+  .percentage-score {
+    font-size: 2rem;
   }
   
   .generation-panel {
     padding: 20px;
   }
   
+  .generation-panel h3 {
+    font-size: 1.15rem;
+  }
+  
   .generation-controls {
     flex-direction: column;
     align-items: stretch;
+  }
+  
+  .exam-size-input-group {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 12px;
   }
   
   .generate-multiple {
@@ -769,10 +787,12 @@ button:hover::before {
   
   .question-count-input {
     width: 100%;
+    box-sizing: border-box;
   }
   
-  .btn-generate {
+  .btn-generate, .btn-generate-exam {
     width: 100%;
+    box-sizing: border-box;
   }
 }
 
