@@ -1,21 +1,50 @@
 # Environment and API Keys
 .env
 env.js
+.env.*
+!.env.example
 
 # Dependencies
 node_modules/
+.pnp
+.pnp.js
+
+# Testing and Coverage
+test_*.js
+*.test.js
+*.spec.js
+coverage/
+.nyc_output/
 
 # Build outputs
 dist/
 build/
+out/
 
 # IDE
 .vscode/
 .idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # OS
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
-# Logs
+# Logs & Cache
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+.npm/
+.eslintcache

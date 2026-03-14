@@ -2,6 +2,8 @@
 
 Simulador de examen interactivo para la certificación **Google Cloud Associate Cloud Engineer (ACE)**. Utiliza Inteligencia Artificial (OpenAI GPT) para generar preguntas dinámicas y personalizadas basadas en los temas oficiales del examen.
 
+![Página Principal](./screenshots/pagina-principal.jpeg)
+
 ## 🌟 Características
 
 - **Generación con IA**: Preguntas únicas cada vez, evitando la memorización de bancos de preguntas fijos.
@@ -51,8 +53,13 @@ Simulador de examen interactivo para la certificación **Google Cloud Associate 
 1.  Al ingresar, verás el panel de **Generar Examen**.
 2.  Ingresa la cantidad de preguntas que deseas (ej. 10).
 3.  Haz clic en **Generar Examen**. La IA preparará el cuestionario en unos segundos.
+
+    ![Preguntas generadas](./screenshots/preguntas.jpeg)
+
 4.  Responde las preguntas. Recibirás feedback inmediato con el botón "Ver explicación".
 5.  Al terminar, obtendrás tu puntuación y una recomendación sobre si estás listo para el examen oficial.
+
+    ![Resultado Final](./screenshots/resultado-final.png)
 
 ## ⚠️ Nota de Seguridad
 
